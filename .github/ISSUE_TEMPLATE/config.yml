@@ -1,0 +1,7 @@
+# Org-wide default issue types (inherited by every repo without its own
+# .github/ISSUE_TEMPLATE). Four types, each with different requirements:
+#   Issue    — a defect / problem that needs fixing
+#   Task     — committed, scoped work (anchor → AC → test → code → doc)
+#   Idea     — a proposal to consider (low bar, decision-pending)
+#   Incident — a failure in a running environment (root cause + follow-ups)
+blank_issues_enabled: false
