@@ -1,0 +1,21 @@
+{
+  "adapter": "rules-v2",
+  "dirty_inputs": [],
+  "inputs": {
+    "repo": "7f5638745ecb37e7c6106b5d67fb25a397663b9e8332d868f477350c039e1734",
+    "root": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "language": "en",
+  "outputs": {
+    "AGENTS.md": "4e0e25633a22f4e22ebfdc7e7dfebe760268fe22dc06a0ea558a342b909cfb6a",
+    "CLAUDE.md": "a54ff182c7e8acf56acfd6e4b9c3ff41e2c41a31c9b211b2deb9df75d9a478f9"
+  },
+  "profiles": [],
+  "schema": 2,
+  "source_revision": "3bd08b82cdbc44268e4e3b7234836fd0cbe5275f",
+  "target": {
+    "remote": "github.com/wangzitian0/.github",
+    "repo": "github-defaults",
+    "workspace": "zitian"
+  }
+}
