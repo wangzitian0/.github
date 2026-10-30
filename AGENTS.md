@@ -1,4 +1,4 @@
-<!-- WS_STATIC_START adapter=rules-v2 inputs=a3cc4f120130e91f8b242dd3187f6f3bd697b383bcc9d22c5dd93fc039c10ac0 -->
+<!-- WS_STATIC_START adapter=rules-v2 inputs=b95d1d77d126d56b64e5b0bfc879ddade13908e7a0cf3aa43d131cc6f780bf5f -->
 <!-- Generated file: do not edit by hand. These rules are maintained in the owner's rule source and re-rendered here. -->
 
 ## Production reservation
@@ -14,7 +14,7 @@ The single definition of the production reservation. Other tiers, skills and gat
 # Account-wide GitHub defaults — Agent Guidelines
 
 > **Repository Archetype**: `config` (the account's `.github` repository)
-> **Rule Carrier**: `AGENTS.md` is generated; `CLAUDE.md` is a symlink to it. Do not edit either by hand.
+> **Rule Carrier**: `AGENTS.md` is generated. Do not edit it by hand.
 
 This repository holds community-health defaults, currently the issue templates under `.github/ISSUE_TEMPLATE/`, which GitHub applies to every repository of this account that has no templates of its own.
 

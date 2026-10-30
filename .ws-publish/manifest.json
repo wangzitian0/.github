@@ -2,17 +2,16 @@
   "adapter": "rules-v2",
   "dirty_inputs": [],
   "inputs": {
-    "repo": "7f5638745ecb37e7c6106b5d67fb25a397663b9e8332d868f477350c039e1734",
+    "repo": "4806680476c0fe78e9eb6b7780b39ed4a0fbd8eb20acc9124fa59961cb3a1a45",
     "root": "89fcd1a37daf77d3d45bdb52512a6868a83b368e1a24d9f00b6d796dd09d1e35"
   },
   "language": "en",
   "outputs": {
-    "AGENTS.md": "0be432d1a6a3c12e5e76312836b95a29cf3889a08c84ee43590525dcab300256",
-    "CLAUDE.md": "a54ff182c7e8acf56acfd6e4b9c3ff41e2c41a31c9b211b2deb9df75d9a478f9"
+    "AGENTS.md": "61be11655fb1e80c767c97187914c303ae9185f3c6ff15fa6969257c1166edfa"
   },
   "profiles": [],
   "schema": 2,
-  "source_revision": "650eb0e570d5c24174daf32f2a33b00e8b9a4c6e",
+  "source_revision": "0a9b387c02eb151921ce1debca07470ceee6e130",
   "target": {
     "remote": "github.com/wangzitian0/.github",
     "repo": "github-defaults",
