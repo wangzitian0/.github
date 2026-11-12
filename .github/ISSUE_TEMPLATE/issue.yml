@@ -1,39 +1,74 @@
-name: "Issue — defect / problem"
-description: "Something is wrong, broken, or not behaving as expected and needs fixing."
-title: "[issue] "
+name: "Issue — defect"
+description: "Something behaves differently from what a rule, a document or a test says."
+title: "<area>: <observed symptom>"
 labels: ["bug"]
 body:
   - type: markdown
     attributes:
       value: |
-        Use this for **a problem that needs fixing**. For planned work use **Task**,
-        for a proposal use **Idea**, for a failure in a running environment use **Incident**.
+        Use this for **a defect**. For planned work use **Task**, for a proposal use **Idea**,
+        for a failure in a running environment use **Incident**.
+        Paste evidence; do not paraphrase it. Put long output in `<details>`.
+        Write "Not measured" in a field that you did not measure.
   - type: textarea
-    id: problem
+    id: did
     attributes:
-      label: "What's wrong — observed vs expected"
+      label: "What did you run?"
+      description: "The exact commands or inputs, in order. Another person must be able to paste them."
       placeholder: |
-        Observed:
-        Expected:
-        Evidence (logs / screenshot / run URL):
+        1. `...`
+        2. `...`
     validations:
       required: true
   - type: textarea
-    id: repro
+    id: saw
     attributes:
-      label: "How to reproduce"
-      description: "Deterministic steps / commands / inputs so someone else can see it."
-      placeholder: |
-        1. ...
-        2. ...
-        3. Observe ...
+      label: "What did you see?"
+      description: "The verbatim output, exit code or run URL. No summary in place of the output."
+      render: shell
     validations:
       required: true
-  - type: input
-    id: scope
+  - type: textarea
+    id: expected
     attributes:
-      label: "Where — environment + area"
-      placeholder: "env: local / staging / prod · area / module: ... · branch/tag: ..."
+      label: "What did you expect, and what says so?"
+      description: "The expected result, and the rule, document, test or earlier behavior that defines it."
+      placeholder: |
+        Expected: ...
+        Defined by: <file#Lnn / doc link / test name>
+    validations:
+      required: true
+  - type: textarea
+    id: where
+    attributes:
+      label: "Where: repository, commit, environment, file"
+      placeholder: |
+        Repository and commit: <owner/repo>@<sha>
+        Environment: local / CI / staging / production
+        File or component: <path#Lnn>
+        Tool versions: <output of the version command>
+    validations:
+      required: true
+  - type: textarea
+    id: since
+    attributes:
+      label: "Since when?"
+      description: "The last ref that worked and the first ref that failed. Give each time with its zone."
+      placeholder: |
+        Last good: <sha or tag, time>
+        First bad: <sha or tag, time>
+        Or: never worked / not bisected
+    validations:
+      required: true
+  - type: textarea
+    id: impact
+    attributes:
+      label: "Who or what does it affect, and how often?"
+      description: "The consumer that gets the wrong result, the count of failures, and the workaround that exists today."
+      placeholder: |
+        Affected: ...
+        Frequency: <n> of <m> runs
+        Workaround today: ...
     validations:
       required: true
   - type: dropdown
@@ -41,20 +76,39 @@ body:
     attributes:
       label: "Severity"
       options:
-        - "blocks work / data-correctness / security"
-        - "degraded but workable"
-        - "minor / cosmetic"
+        - "high — blocks work, wrong data, or security"
+        - "middle — degraded, a workaround exists"
+        - "low — cosmetic"
     validations:
       required: true
   - type: textarea
-    id: fix
+    id: missed
     attributes:
-      label: "Minimal fix + acceptance criteria (if known)"
-      description: "Smallest scoped change likely to fix it, what stays out of scope, and concrete pass/fail checks."
-      placeholder: |
-        Minimal path:
-        Out of scope:
-        Acceptance:
-        - [ ] ...
+      label: "Why did no check catch it?"
+      description: "The test or gate that covers this area and why it stayed green, or: no check covers it."
+    validations:
+      required: true
+  - type: textarea
+    id: cause
+    attributes:
+      label: "Cause"
+      description: "Start with 'Measured:' and the probe that proves it, or with 'Guess:'."
     validations:
       required: false
+  - type: textarea
+    id: done
+    attributes:
+      label: "Done when"
+      description: "Each line is a command and its expected result. Add what stays out of scope."
+      placeholder: |
+        - [ ] `<command>` → <expected result>
+        Out of scope: ...
+    validations:
+      required: true
+  - type: checkboxes
+    id: duplicate
+    attributes:
+      label: "Duplicate search"
+      options:
+        - label: "I searched open and closed issues. No issue has the same cause."
+          required: true

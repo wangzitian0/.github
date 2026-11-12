@@ -1,14 +1,13 @@
 name: "Idea — proposal"
-description: "A proposal or suggestion to consider. Not yet committed work."
-title: "[idea] "
+description: "A proposal that waits for a decision. Not committed work."
+title: "idea(<area>): <proposal>"
 labels: ["idea"]
 body:
   - type: markdown
     attributes:
       value: |
-        A **low-bar** place to capture a proposal. No acceptance criteria required —
-        the point is to decide whether it's worth turning into a **Task**. Be honest
-        about value vs cost; call it out if it might be over-engineering.
+        A **low-bar** place for a proposal. The aim is a decision: make it a **Task**, or drop it.
+        State the cost as plainly as the value.
   - type: textarea
     id: idea
     attributes:
@@ -18,30 +17,43 @@ body:
   - type: textarea
     id: problem
     attributes:
-      label: "What problem / pain does it address?"
-      placeholder: "Today ... which costs us ..."
+      label: "What problem did you meet, and where?"
+      description: "One real occurrence: the link, the command or the output. Not a general statement."
+      placeholder: |
+        Occurrence: <link / command / output>
+        Cost each time: ...
+    validations:
+      required: true
+  - type: textarea
+    id: today
+    attributes:
+      label: "How do you handle it today?"
+      description: "The present workaround, and the existing mechanism that this idea overlaps or replaces."
     validations:
       required: true
   - type: textarea
     id: approach
     attributes:
-      label: "Rough approach (optional)"
-      description: "A sketch — not a design. Leave blank if it's just a seed."
+      label: "Rough approach"
+      description: "A sketch, not a design."
     validations:
       required: false
   - type: textarea
     id: roi
     attributes:
-      label: "Value vs cost (rough ROI)"
-      description: "Why it might be worth it, and an honest guess at the cost / risk. Note if it overlaps or replaces an existing mechanism."
+      label: "Value and cost"
       placeholder: |
-        Value:
-        Cost / risk:
+        Value: ...
+        Cost and risk: ...
     validations:
       required: false
   - type: textarea
-    id: questions
+    id: decision
     attributes:
-      label: "Open questions / what a decision needs"
+      label: "What decides it?"
+      description: "The measurement or fact that makes this a Task, and the one that drops it."
+      placeholder: |
+        Do it if: ...
+        Drop it if: ...
     validations:
-      required: false
+      required: true
