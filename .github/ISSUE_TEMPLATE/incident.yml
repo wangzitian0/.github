@@ -99,3 +99,10 @@ body:
         - [ ] #... detection / alerting
     validations:
       required: true
+  - type: checkboxes
+    id: hygiene
+    attributes:
+      label: "No secret, no private data"
+      options:
+        - label: "The body holds no token or password, and no real amount, balance, account number, personal name or local path."
+          required: true
