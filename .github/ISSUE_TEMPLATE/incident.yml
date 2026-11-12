@@ -13,7 +13,8 @@ body:
     id: summary
     attributes:
       label: "One-line summary — what broke, when"
-      placeholder: "prod API served 404 from <time> to <time>"
+      description: "Give each time with its zone."
+      placeholder: "prod API served 404 from <time and zone> to <time and zone>"
     validations:
       required: true
   - type: dropdown
@@ -42,8 +43,8 @@ body:
     attributes:
       label: "Impact — what/who was affected, and for how long"
       placeholder: |
-        Affected: env / services / users
-        Window: <start> → <end> (duration)
+        Affected: env / services / users (count)
+        Window: <start> → <end>, with zone (duration)
         Data impact: none / ... — and is the source-of-truth data intact?
     validations:
       required: true
@@ -52,17 +53,20 @@ body:
     attributes:
       label: "Timeline — detection → diagnosis → mitigation → resolution"
       placeholder: |
-        - <t> detected via ...
-        - <t> diagnosed: ...
-        - <t> mitigated by ...
-        - <t> resolved
+        - <t> detected via ... (link to the alert, log or run)
+        - <t> diagnosed: ... (command and output)
+        - <t> mitigated by ... (commit or command)
+        - <t> resolved (the probe that shows it)
     validations:
       required: true
   - type: textarea
     id: root_cause
     attributes:
       label: "Root cause — the actual cause, not the symptom"
-      description: "Trace it to the real trigger (e.g. a config/policy change), not the visible effect."
+      description: "The change that triggered it (commit, config or policy change) and the probe that proves it. Start with 'Guess:' when no probe proves it."
+      placeholder: |
+        Trigger: <owner/repo>@<sha> / <config change>
+        Proof: `<command>` → <output>
     validations:
       required: true
   - type: textarea

@@ -1,7 +1,13 @@
-# Org-wide default issue types (inherited by every repo without its own
-# .github/ISSUE_TEMPLATE). Four types, each with different requirements:
-#   Issue    — a defect / problem that needs fixing
-#   Task     — committed, scoped work (anchor → AC → test → code → doc)
-#   Idea     — a proposal to consider (low bar, decision-pending)
-#   Incident — a failure in a running environment (root cause + follow-ups)
+# Account defaults: every repository without its own .github/ISSUE_TEMPLATE
+# inherits these four issue types.
+#   Issue    - a defect: something behaves differently from a stated rule
+#   Task     - committed, scoped work with checks that prove it
+#   Idea     - a proposal that waits for a decision
+#   Incident - a failure that happened in a running environment
+#
+# Body contract. GitHub renders each field as "### <label>". An issue that is
+# created from the command line (gh issue create --body-file) uses the same
+# headings, in the same order, and fills each required field.
+# Each field asks for pasted evidence: a command, its verbatim output, a
+# commit SHA or a link. Write "Not measured" when you did not measure.
 blank_issues_enabled: false

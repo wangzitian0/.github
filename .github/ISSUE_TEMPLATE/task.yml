@@ -1,73 +1,108 @@
 name: "Task — planned work"
-description: "A scoped, committed unit of work with acceptance criteria."
-title: "[task] "
+description: "A scoped, committed unit of work with checks that prove it."
+title: "<type>(<area>): <outcome>"
 labels: ["enhancement"]
 body:
   - type: markdown
     attributes:
       value: |
-        Use this for **committed, scoped work**. Follows the mandatory order
-        **anchor → acceptance criteria → test → code → doc**. Frame it **MECE**:
-        mutually exclusive slices, collectively exhaustive coverage, explicit out-of-scope.
+        Use this for **committed, scoped work**. Order: **anchor → checks → test → code → doc**.
+        Paste evidence; do not paraphrase it. Write "Not measured" in a field that you did not measure.
+        A tracking issue is a hub: it holds the step list and the links. Open another issue for a discussion.
   - type: textarea
-    id: goal
+    id: outcome
     attributes:
-      label: "Goal — what & why"
+      label: "Outcome"
+      description: "One sentence: after this change, who can do what. Not a list of edits."
+      placeholder: "After this change, <who> can <do what>."
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: "Why now: the measured cost of no change"
+      description: "A number and its source. Add how the problem is handled today."
       placeholder: |
-        What:
-        Why (the outcome / value it delivers):
+        Cost: <number, unit, period> (source: <command / link>)
+        Handled today by: ...
     validations:
       required: true
   - type: input
     id: anchor
     attributes:
-      label: "Parent EPIC / tracking issue"
-      description: "Every task anchors to a parent goal (EPIC, milestone, or tracking issue)."
-      placeholder: "EPIC-0xx · milestone · or #<issue>"
+      label: "Parent issue or goal"
+      placeholder: "#<issue> · milestone · or: none, this is the root"
     validations:
       required: true
   - type: textarea
-    id: ac
+    id: state
     attributes:
-      label: "Acceptance criteria (testable)"
-      description: "Concrete pass/fail checks. Register AC IDs where you track them, if applicable."
+      label: "Current state, measured"
+      description: "The commit, the time with its zone, the command and its output. Name the files and components."
       placeholder: |
-        - [ ] ...
-        - [ ] ...
+        Measured at <owner/repo>@<sha>, <time and zone>
+        `<command>` → <output>
+        Files: <path#Lnn>
     validations:
       required: true
   - type: textarea
-    id: breakdown
+    id: change
     attributes:
-      label: "MECE breakdown · out-of-scope · dependencies"
+      label: "Change: slices, and what each one deletes"
+      description: "Slices that do not overlap and together cover the outcome. One PR for each slice."
       placeholder: |
-        Slices (mutually exclusive, collectively exhaustive):
-        - ...
-        Out of scope:
-        - ...
-        Depends on:
-        - ...
+        - [ ] Slice 1: adds ... ; deletes ...
+        - [ ] Slice 2: ...
+        Depends on: #...
     validations:
       required: true
+  - type: textarea
+    id: nongoals
+    attributes:
+      label: "Non-goals"
+      description: "Work that a reader could expect here and that this task does not do."
+    validations:
+      required: true
+  - type: textarea
+    id: done
+    attributes:
+      label: "Done when"
+      description: "Each line is a command and its expected result. Include one check on the running system, not only tests."
+      placeholder: |
+        - [ ] `<command>` → <expected result>
+    validations:
+      required: true
+  - type: dropdown
+    id: reach
+    attributes:
+      label: "Does it change what production runs or stores?"
+      options:
+        - "No"
+        - "Yes — the body names the production path"
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: "Alternatives rejected"
+      description: "One line for each: the alternative and the fact that rejects it."
+    validations:
+      required: false
+  - type: textarea
+    id: questions
+    attributes:
+      label: "Open questions"
+      description: "Each question names what answers it: a measurement, a document or a person."
+    validations:
+      required: false
   - type: dropdown
     id: priority
     attributes:
       label: "Priority"
       options:
-        - "critical — blocks main / release / data-correctness / security"
-        - "high — blocks a core path or near-term milestone"
-        - "medium — important but not blocking immediate delivery"
-        - "low — cleanup / polish / opportunistic"
+        - "critical — blocks main, a release, data correctness or security"
+        - "high — blocks a core path or the next milestone"
+        - "medium — does not block the present delivery"
+        - "low — cleanup"
     validations:
       required: true
-  - type: textarea
-    id: dod
-    attributes:
-      label: "Definition of done"
-      value: |
-        - [ ] Failing tests reference the acceptance criteria (red), then pass (green)
-        - [ ] Minimal code to pass; no scope creep
-        - [ ] Docs updated
-        - [ ] CI-passing PR is the deliverable; reviewed and merged
-    validations:
-      required: false
