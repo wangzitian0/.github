@@ -90,13 +90,9 @@ def problems(body: str, fields: list[Field]) -> list[str]:
             out.append(f"missing heading: ### {label}")
         elif have[label] in EMPTY:
             out.append(f"empty section: ### {label}")
-        else:
-            checked = set(CHECKED.findall(have[label]))
-            out += [
-                f"box not checked under ### {label}: {o}"
-                for o in options
-                if o not in checked
-            ]
+        elif len(CHECKED.findall(have[label])) < len(options):
+            # A checked box can hold the evidence in place of the form text.
+            out.append(f"box not checked under ### {label}")
     return out
 
 

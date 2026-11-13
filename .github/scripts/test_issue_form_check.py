@@ -76,14 +76,16 @@ def test_a_heading_inside_a_code_fence_does_not_count():
 
 @pytest.mark.parametrize("box", [" ", "X"])
 def test_a_required_box_must_be_checked(box):
-    found = chk.check(body_for("idea.yml", box=box), FORMS)[1]
-    option = FORMS["idea.yml"][-1][1][0]
-    want = (
-        []
-        if box == "X"
-        else [f"box not checked under ### No secret, no private data: {option}"]
+    body = body_for("idea.yml", box=box).replace(
+        "] The body holds", "] I read the body: it holds"
     )
-    assert found == want
+    assert (
+        "] I read the body: it holds" in body
+    )  # evidence text in place of the form text
+    want = (
+        [] if box == "X" else ["box not checked under ### No secret, no private data"]
+    )
+    assert chk.check(body, FORMS)[1] == want
 
 
 def test_the_word_none_is_content():
