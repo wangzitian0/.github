@@ -7,6 +7,7 @@
 #       permissions: {contents: read, issues: write}
 #       uses: wangzitian0/.github/.github/workflows/issue-form.yml@main
 # The check job always reads the script and the forms from main of this repository.
+# Issues by a bot are skipped (automated incident issues). Only issues opened, edited or reopened after the caller merged are checked.
 # Manual replay: gh workflow run issue-form.yml -f issue=<number>
 name: issue-form
 
