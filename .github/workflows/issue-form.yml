@@ -1,0 +1,118 @@
+# Check that a new or edited issue has the required headings of one issue form.
+# The forms in .github/ISSUE_TEMPLATE are the single source of the headings.
+# Another repository calls this workflow:
+#   on: {issues: {types: [opened, edited, reopened]}}
+#   jobs:
+#     form:
+#       permissions: {contents: read, issues: write}
+#       uses: wangzitian0/.github/.github/workflows/issue-form.yml@main
+# The check job always reads the script and the forms from main of this repository.
+# Manual replay: gh workflow run issue-form.yml -f issue=<number>
+name: issue-form
+
+on:
+  workflow_call:
+    inputs:
+      issue:
+        description: Issue number. The default is the issue of the event.
+        type: string
+        required: false
+  workflow_dispatch:
+    inputs:
+      issue:
+        description: Issue number in this repository
+        type: string
+        required: true
+  issues:
+    types: [opened, edited, reopened]
+  pull_request:
+    paths: [".github/scripts/**", ".github/ISSUE_TEMPLATE/**", ".github/workflows/issue-form.yml"]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 -m pip install --quiet pyyaml pytest
+      - run: python3 -m pytest .github/scripts -q
+
+  check:
+    if: >-
+      github.event_name != 'pull_request' &&
+      !(github.event_name == 'issues' && github.event.issue.user.type == 'Bot')
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    concurrency:
+      group: issue-form-${{ github.repository }}-${{ inputs.issue || github.event.issue.number }}
+      cancel-in-progress: true
+    permissions:
+      contents: read
+      issues: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      ISSUE: ${{ inputs.issue || github.event.issue.number }}
+      SINCE: "2026-11-13T00:00:00Z"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: wangzitian0/.github
+          ref: main
+          path: account-defaults
+          persist-credentials: false
+      - name: Read the issue body
+        run: |
+          case "$ISSUE" in ''|*[!0-9]*) echo "not an issue number"; exit 2;; esac
+          gh issue view "$ISSUE" --json body --jq .body > body.md
+          created=$(gh issue view "$ISSUE" --json createdAt --jq .createdAt)
+          # ISO 8601 UTC strings compare in time order. An older issue is not rewritten.
+          if [ "$created" \< "$SINCE" ]; then echo "created $created, before $SINCE: not checked"; else echo "run=1" >> "$GITHUB_OUTPUT"; fi
+        id: read
+      - name: Check the headings
+        id: check
+        if: steps.read.outputs.run == '1'
+        run: |
+          python3 -c 'import yaml' 2>/dev/null || python3 -m pip install --quiet pyyaml
+          rc=0
+          python3 account-defaults/.github/scripts/issue_form_check.py \
+            --forms account-defaults/.github/ISSUE_TEMPLATE --body-file body.md > result.txt || rc=$?
+          cat result.txt
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+      - name: Report
+        if: steps.read.outputs.run == '1'
+        env:
+          RC: ${{ steps.check.outputs.rc }}
+        run: |
+          marker='<!-- issue-form-check -->'
+          # Only a comment of this workflow's own login counts. Another user can write the marker.
+          old=$(gh api "repos/$GH_REPO/issues/$ISSUE/comments" --paginate \
+            --jq ".[] | select(.user.login == \"github-actions[bot]\" and (.body | startswith(\"$marker\"))) | .id" | tail -n 1)
+          if [ "$RC" = "0" ]; then
+            gh issue edit "$ISSUE" --remove-label needs-form || true
+            if [ -n "$old" ]; then gh api -X DELETE "repos/$GH_REPO/issues/comments/$old"; fi
+            exit 0
+          fi
+          if [ "$RC" != "1" ]; then echo "the check did not run (rc=$RC)"; exit "$RC"; fi
+          {
+            echo "$marker"
+            echo "This issue does not have the required headings of an issue form."
+            echo
+            cat result.txt
+            echo
+            echo "Forms: https://github.com/wangzitian0/.github/tree/main/.github/ISSUE_TEMPLATE"
+            echo "Edit the body. Use the \`### <label>\` headings of one form and fill each required field. The check runs again on each edit."
+          } > comment.md
+          gh label create needs-form --color D93F0B \
+            --description "The body lacks the required headings of an issue form" 2>/dev/null || true
+          gh issue edit "$ISSUE" --add-label needs-form
+          if [ -n "$old" ]; then
+            gh api -X PATCH "repos/$GH_REPO/issues/comments/$old" -F body=@comment.md > /dev/null
+          else
+            gh issue comment "$ISSUE" --body-file comment.md
+          fi
+          exit 1
