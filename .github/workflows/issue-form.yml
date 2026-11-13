@@ -4,8 +4,9 @@
 #   on: {issues: {types: [opened, edited, reopened]}}
 #   jobs:
 #     form:
-#       permissions: {issues: write}
+#       permissions: {contents: read, issues: write}
 #       uses: wangzitian0/.github/.github/workflows/issue-form.yml@main
+# The check job always reads the script and the forms from main of this repository.
 # Manual replay: gh workflow run issue-form.yml -f issue=<number>
 name: issue-form
 
@@ -46,6 +47,9 @@ jobs:
       !(github.event_name == 'issues' && github.event.issue.user.type == 'Bot')
     runs-on: ubuntu-latest
     timeout-minutes: 3
+    concurrency:
+      group: issue-form-${{ github.repository }}-${{ inputs.issue || github.event.issue.number }}
+      cancel-in-progress: true
     permissions:
       contents: read
       issues: write
@@ -60,6 +64,7 @@ jobs:
           repository: wangzitian0/.github
           ref: main
           path: account-defaults
+          persist-credentials: false
       - name: Read the issue body
         run: |
           case "$ISSUE" in ''|*[!0-9]*) echo "not an issue number"; exit 2;; esac
@@ -84,8 +89,9 @@ jobs:
           RC: ${{ steps.check.outputs.rc }}
         run: |
           marker='<!-- issue-form-check -->'
+          # Only a comment of this workflow's own login counts. Another user can write the marker.
           old=$(gh api "repos/$GH_REPO/issues/$ISSUE/comments" --paginate \
-            --jq "[.[] | select(.body | startswith(\"$marker\")) | .id] | last // empty")
+            --jq ".[] | select(.user.login == \"github-actions[bot]\" and (.body | startswith(\"$marker\"))) | .id" | tail -n 1)
           if [ "$RC" = "0" ]; then
             gh issue edit "$ISSUE" --remove-label needs-form || true
             if [ -n "$old" ]; then gh api -X DELETE "repos/$GH_REPO/issues/comments/$old"; fi
