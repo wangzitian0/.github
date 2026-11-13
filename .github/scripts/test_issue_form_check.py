@@ -122,9 +122,80 @@ def test_the_nearest_form_is_by_share_of_problems():
     # The body has 6 issue.yml headings, and 1 of them is also an idea.yml heading.
     keep = labels("issue.yml")[:5] + ["No secret, no private data"]
     body = "\n".join(f"### {label}\n\n- [x] text\n" for label in keep)
-    count = {name: len(chk.problems(body, fields)) for name, fields in FORMS.items()}
+    have = chk.sections(body)
+    count = {name: len(chk.problems(have, fields)) for name, fields in FORMS.items()}
     assert count["idea.yml"] < count["issue.yml"]  # a choice by count takes idea.yml
     assert chk.check(body, FORMS)[0] == "issue.yml"
+
+
+def test_an_info_string_line_does_not_close_a_fence():
+    label = labels("idea.yml")[0]
+    hidden = f"```\n```python\n### {label}\n\ntext\n```\n"
+    assert chk.check(body_for("idea.yml", skip=label) + hidden, FORMS)[1] == [
+        f"missing heading: ### {label}"
+    ]
+
+
+def test_a_heading_inside_a_tilde_fence_does_not_count():
+    label = labels("idea.yml")[0]
+    hidden = f"~~~\n### {label}\n\ntext\n~~~\n"
+    assert chk.check(body_for("idea.yml", skip=label) + hidden, FORMS)[1] == [
+        f"missing heading: ### {label}"
+    ]
+
+
+def test_a_backtick_in_the_info_string_opens_no_fence():
+    label = labels("idea.yml")[0]
+    body = f"```a`b\n\n### {label}\n\ntext\n\n" + body_for("idea.yml", skip=label)
+    assert chk.check(body, FORMS) == ("idea.yml", [])
+
+
+def test_a_box_inside_a_fence_is_not_checked():
+    body = body_for("idea.yml").replace("- [x] The body", "```\n- [x] The body")
+    assert "```\n- [x] The body" in body
+    assert chk.check(body + "\n```\n", FORMS)[1] == [
+        "box not checked under ### No secret, no private data"
+    ]
+
+
+def test_a_tab_after_the_hashes_is_a_heading():
+    label = labels("idea.yml")[0]
+    body = body_for("idea.yml").replace(f"### {label}", f"###\t{label}")
+    assert f"###\t{label}" in body
+    assert chk.check(body, FORMS) == ("idea.yml", [])
+
+
+def test_long_space_runs_take_linear_time():
+    import time
+
+    body = "\n".join(
+        ["### a" + " " * 60000 + "x\x00", "- [x] a" + " " * 60000 + "x\x00"]
+    )
+    start = time.monotonic()
+    chk.check(body, FORMS)
+    assert time.monotonic() - start < 2
+
+
+def test_a_broken_forms_directory_is_exit_2(tmp_path, capsys):
+    body = tmp_path / "b.md"
+    body.write_text(body_for("idea.yml"), encoding="utf-8")
+    assert chk.main(["--forms", str(tmp_path), "--body-file", str(body)]) == 2
+    (tmp_path / "bad.yml").write_text(
+        "body:\n  - type: input\n    validations: {required: true}\n", encoding="utf-8"
+    )
+    assert chk.main(["--forms", str(tmp_path), "--body-file", str(body)]) == 2
+    assert "ERROR: the check did not run" in capsys.readouterr().err
+    assert (
+        chk.main(
+            [
+                "--forms",
+                str(HERE.parent / "ISSUE_TEMPLATE"),
+                "--body-file",
+                str(tmp_path / "none.md"),
+            ]
+        )
+        == 2
+    )
 
 
 def test_main_exit_codes(tmp_path, capsys):
