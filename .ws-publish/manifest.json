@@ -3,15 +3,15 @@
   "dirty_inputs": [],
   "inputs": {
     "repo": "4806680476c0fe78e9eb6b7780b39ed4a0fbd8eb20acc9124fa59961cb3a1a45",
-    "root": "29d4edbb010a369c08dd907e52a64cca0647e80832fca9e302e36f0b57caaeeb"
+    "root": "9f872c5d84f88abe71f19822dfd21032e56026f505c274da072e70e44175f821"
   },
   "language": "en",
   "outputs": {
-    "AGENTS.md": "f815ba9bf1e659b34f5b3892979c647ad06362951e8f094b22ef476d178c7371"
+    "AGENTS.md": "b275d04b56719ec63cb1cbbf5acbf2c529e331de7fb5a862d535d818f22fb81b"
   },
   "profiles": [],
   "schema": 2,
-  "source_revision": "27fffb9f97441319b48b1dd61ef1dcc37ca57015",
+  "source_revision": "bb683241be08d8ba11e3794a3eab1df26179d7f4",
   "target": {
     "remote": "github.com/wangzitian0/.github",
     "repo": "github-defaults",
